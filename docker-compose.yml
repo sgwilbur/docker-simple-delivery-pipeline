@@ -1,0 +1,65 @@
+version: '3'
+## https://docs.docker.com/compose/compose-file/
+
+services:
+
+  ## https://hub.docker.com/r/gogs/gogs/
+  ## https://github.com/gogits/gogs/tree/master/docker
+  ## docker run --name=gogs -p 10022:22 -p 10080:3000 -v /var/gogs:/data gogs/gogs
+  gogs:
+    image: gogs/gogs:0.11.29
+    ports:
+      - "10022:22"
+      - "10080:3000"
+    volumes:
+      - ./data/gogs:/data
+
+
+  ## https://hub.docker.com/r/jenkinsci/jenkins/
+  ## https://github.com/jenkinsci/docker/blob/master/README.md
+  ## docker run -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
+  jenkins-master:
+    image: jenkinsci/jenkins:2.85
+    environment:
+      JENKINS_SLAVE_AGENT_PORT: "50000"
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - ./data/jenkins:/var/jenkins_home
+
+
+  ## https://hub.docker.com/r/jenkinsci/jnlp-slave/
+  ## docker run jenkinsci/jnlp-slave -url http://jenkins-server:port <secret> <agent name>
+  ## docker run jenkinsci/jnlp-slave -url http://jenkins-server:port -workDir=/home/jenkins/agent <secret> <agent name>
+  jenkins-node-jnlp:
+    image: jenkinsci/jnlp-slave:latest
+    depends_on:
+      - jenkins-master
+    environment:
+      JENKINS_AGENT_NAME: jnlp-node
+      JENKINS_URL: http://jenkins-master:50000
+      JENKINS_SECRET: s3cr3t
+    #  JENKINS_TUNNEL: <host>:<port>
+
+  ## https://hub.docker.com/r/jenkinsci/ssh-slave/
+  ## docker run jenkinsci/ssh-slave "<public key>"
+  ## docker run -e "JENKINS_SLAVE_SSH_PUBKEY=<public key>" jenkinsci/ssh-slave
+  # jenkins-ssh-node:
+  #   image: jenkinsci/ssh-slave
+  #   depends_on: jenkins-master
+
+
+  ## https://hub.docker.com/r/sonatype/nexus3/
+  ## docker run -d -p 8081:8081 --name nexus sonatype/nexus3
+  ## docker run -d -p 8081:8081 --name nexus -e NEXUS_CONTEXT=nexus sonatype/nexus3
+  ## docker run -d -p 8081:8081 --name nexus -v nexus-data:/nexus-data sonatype/nexus3
+  ## docker run -d -p 8081:8081 --name nexus -e INSTALL4J_ADD_VM_PARAMS="-Xms2g -Xmx2g -XX:MaxDirectMemorySize=3g  -Djava.util.prefs.userRoot=/some-other-dir" sonatype/nexus3
+  nexus:
+    image: sonatype/nexus3:3.6.0
+    environment:
+      NEXUS_CONTEXT: /
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data/nexus-data:/nexus-data
