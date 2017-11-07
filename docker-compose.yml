@@ -27,20 +27,37 @@ services:
       - "50000:50000"
     volumes:
       - ./data/jenkins:/var/jenkins_home
+    links:
+      - gogs
+      - nexus
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 
   ## https://hub.docker.com/r/jenkinsci/jnlp-slave/
   ## docker run jenkinsci/jnlp-slave -url http://jenkins-server:port <secret> <agent name>
   ## docker run jenkinsci/jnlp-slave -url http://jenkins-server:port -workDir=/home/jenkins/agent <secret> <agent name>
+  ## java -jar http://jenkins-master:8080/jnlpJars/agent.jar -jnlpUrl http://localhost:8080/computer/jenkins_node_jnlp/slave-agent.jnlp -secret b1bc8533596c26433dd8e20f9c7b05941a633074c9bfa2bb4ac926e81ef5f872 -workDir "/home/jenkins/agent"
+
+  ## docker command:
+  ## docker run jenkinsci/jnlp-slave -url http://jenkins-master:8080 -workDir=/home/jenkins/agent <secret> jenkins_node_jnlp
   jenkins-node-jnlp:
     image: jenkinsci/jnlp-slave:latest
     depends_on:
       - jenkins-master
     environment:
-      JENKINS_AGENT_NAME: jnlp-node
+      JENKINS_AGENT_NAME: jenkins_node_jnlp
       JENKINS_URL: http://jenkins-master:50000
-      JENKINS_SECRET: s3cr3t
+      JENKINS_SECRET: 1e1e1f793ed9596a394edb2fd21da6060e0af7fdb52f69b28681c10f759a0b49
     #  JENKINS_TUNNEL: <host>:<port>
+    #restart: always
+    links:
+      - jenkins-master
+      - gogs
+      - nexus
 
   ## https://hub.docker.com/r/jenkinsci/ssh-slave/
   ## docker run jenkinsci/ssh-slave "<public key>"
