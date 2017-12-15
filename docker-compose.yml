@@ -36,6 +36,35 @@ services:
       timeout: 10s
       retries: 5
 
+  jenkins-node-jnlp2:
+    image: jenkinsci/jnlp-slave:latest
+    depends_on:
+      - jenkins-master
+    environment:
+      JENKINS_AGENT_NAME: jenkins_node_jnlp2
+      JENKINS_URL: http://jenkins-master:8080
+      JENKINS_SECRET: f72378f1175483cc911cda66da1d418f09ffa7d5afdf8e3acc7d1f63629fc820
+    #  JENKINS_TUNNEL: <host>:<port>
+    #restart: always
+    links:
+      - jenkins-master
+      - gogs
+      - nexus
+
+  jenkins-node-jnlp3:
+    image: jenkinsci/jnlp-slave:latest
+    depends_on:
+      - jenkins-master
+    environment:
+      JENKINS_AGENT_NAME: jenkins_node_jnlp3
+      JENKINS_URL: http://jenkins-master:8080
+      JENKINS_SECRET: ebc4a1c5598775929337296eae7f22ae75dfa1d1968cac7d3341b1dc56aedf23
+    #  JENKINS_TUNNEL: <host>:<port>
+    #restart: always
+    links:
+      - jenkins-master
+      - gogs
+      - nexus
 
   ## https://hub.docker.com/r/jenkinsci/jnlp-slave/
   ## docker run jenkinsci/jnlp-slave -url http://jenkins-server:port <secret> <agent name>
@@ -43,14 +72,14 @@ services:
   ## java -jar http://jenkins-master:8080/jnlpJars/agent.jar -jnlpUrl http://localhost:8080/computer/jenkins_node_jnlp/slave-agent.jnlp -secret b1bc8533596c26433dd8e20f9c7b05941a633074c9bfa2bb4ac926e81ef5f872 -workDir "/home/jenkins/agent"
 
   ## docker command:
-  ## docker run jenkinsci/jnlp-slave -url http://jenkins-master:8080 -workDir=/home/jenkins/agent <secret> jenkins_node_jnlp
+  ## docker run jenkinsci/jnlp-slave -url http://jenkins-master:8080 -workDir=/home/jenkins/agent 1e1e1f793ed9596a394edb2fd21da6060e0af7fdb52f69b28681c10f759a0b49 jenkins_node_jnlp
   jenkins-node-jnlp:
     image: jenkinsci/jnlp-slave:latest
     depends_on:
       - jenkins-master
     environment:
       JENKINS_AGENT_NAME: jenkins_node_jnlp
-      JENKINS_URL: http://jenkins-master:50000
+      JENKINS_URL: http://jenkins-master:8080
       JENKINS_SECRET: 1e1e1f793ed9596a394edb2fd21da6060e0af7fdb52f69b28681c10f759a0b49
     #  JENKINS_TUNNEL: <host>:<port>
     #restart: always
@@ -64,7 +93,7 @@ services:
   ## docker run -e "JENKINS_SLAVE_SSH_PUBKEY=<public key>" jenkinsci/ssh-slave
   # jenkins-ssh-node:
   #   image: jenkinsci/ssh-slave
-  #   depends_on: jenkins-master
+    # depends_on: jenkins-master
 
 
   ## https://hub.docker.com/r/sonatype/nexus3/

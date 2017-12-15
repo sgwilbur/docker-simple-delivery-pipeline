@@ -77,7 +77,10 @@ Or opening a session to the running container:
     exit
     $
 
-Now login as admin and you can add a new JNLP Node
+Now login as admin and you can add the three JNLP Nodes to play around with. You need to manually create them and get the secret to edit the docker-compose file `JENKINS_SECRET: ...` line with on jenkins-node-jnlp, jenkins-node-jnlp2, and jenkins-node-jnlp3.
+
+
+Once your server is up you can then start the jnlp node or nodes so you have some additional agents besides master if you need to test any multiple agent scenarios.
 
 
 ### Setup Nexus
