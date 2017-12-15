@@ -2,6 +2,8 @@
 
 Intended to provide a quick start point for performing a standup of the basic building blocks for testing.
 
+The docker-compose file will bring up a Gogs server for git server based version control, Jenkins OSS for CI, and Nexus OSS for asset management.
+
 
 ### Pre-Requisites
 
@@ -9,7 +11,7 @@ Requires that you have installed [Docker](http://docker.com) to your machine, th
 
 ### Usage
 
-Once you have cloned this repo and navigated to the directory.
+Once you have cloned this repo and navigated to the directory, this will start all the servers but the jenkins nodes will fail, see below if you want to use them as well.
 
     $ pwd
     /Users/you/workspaces/simple-delivery-pipeline
@@ -42,7 +44,6 @@ The first time you run this command the servers will come up un-configured, but 
     simpledeliverypipeline_jenkins-master_1      /bin/tini -- /usr/local/bi ...   Up         0.0.0.0:50000->50000/tcp, 0.0.0.0:8080->8080/tcp
     simpledeliverypipeline_jenkins-node-jnlp_1   jenkins-slave                    Exit 255                                                   
     simpledeliverypipeline_nexus_1               bin/nexus run                    Up         0.0.0.0:8081->8081/tcp   
-
 
 
 ### Setup Jenkins
@@ -98,4 +99,4 @@ Accept the rest of the defaults and continue. This will bring you to a login scr
 
 ## Working with your images
 
-Now once you create the containers
+Now once you create the containers you will need to setup your data inside them as will any environment. However be mindful that the `docker-compose up` command is intended for building the container and will overwrite your data. So once you have an envitonment setup you can
